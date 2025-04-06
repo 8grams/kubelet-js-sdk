@@ -1,0 +1,29 @@
+{
+  "name": "kubelet-js-sdk",
+  "version": "1.0.0",
+  "description": "JavaScript SDK for Kubelet API",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node src/__tests__/test.js"
+  },
+  "keywords": [
+    "kubelet",
+    "kubernetes",
+    "api",
+    "sdk"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/kubelet-js-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/kubelet-js-sdk/issues"
+  },
+  "homepage": "https://github.com/yourusername/kubelet-js-sdk#readme"
+} 
