@@ -3,15 +3,29 @@
  * @module api/containerLogs
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get container logs
- * @param {string} podNamespace - The namespace of the pod
- * @param {string} podID - The ID of the pod
- * @param {string} containerName - The name of the container
- * @returns {Promise<string>} The container logs as text
+ * API for getting container logs
+ * @module api/containerLogs
+ * @extends BaseApi
  */
-export const getContainerLogs = async (podNamespace, podID, containerName) => {
-  return get(`containerLogs/${podNamespace}/${podID}/${containerName}`, {}, true);
-}; 
+export class ContainerLogsApi extends BaseApi {
+  constructor() {
+    super('/containerLogs');
+  }
+
+  /**
+   * Get container logs
+   * @param {string} podNamespace - The namespace of the pod
+   * @param {string} podID - The ID of the pod
+   * @param {string} containerName - The name of the container
+   * @returns {Promise<string>} Container logs
+   */
+  async getContainerLogs(podNamespace, podID, containerName) {
+    return this.get(`/${podNamespace}/${podID}/${containerName}`);
+  }
+}
+
+// Create and export a singleton instance
+export const containerLogs = new ContainerLogsApi(); 

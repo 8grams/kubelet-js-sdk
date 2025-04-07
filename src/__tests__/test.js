@@ -1,11 +1,12 @@
-import * as kubelet from '../index.js';
+import { Kubelet } from '../index.js';
 
 const baseUrl = 'http://localhost:10250'; // Replace with your Kubelet API URL
+const kubelet = new Kubelet({ baseUrl });
 
 // Test stats
 async function testStats() {
   try {
-    const stats = await kubelet.stats.getStats(baseUrl);
+    const stats = await kubelet.stats.getStats();
     console.log('Stats:', stats);
   } catch (error) {
     console.error('Error getting stats:', error);
@@ -15,7 +16,7 @@ async function testStats() {
 // Test metrics
 async function testMetrics() {
   try {
-    const metrics = await kubelet.metrics.getMetrics(baseUrl);
+    const metrics = await kubelet.metrics.getMetrics();
     console.log('Metrics:', metrics);
   } catch (error) {
     console.error('Error getting metrics:', error);
@@ -25,7 +26,7 @@ async function testMetrics() {
 // Test pods
 async function testPods() {
   try {
-    const pods = await kubelet.pods.getPods(baseUrl);
+    const pods = await kubelet.pods.getPods();
     console.log('Pods:', pods);
   } catch (error) {
     console.error('Error getting pods:', error);
@@ -35,7 +36,7 @@ async function testPods() {
 // Test healthz
 async function testHealthz() {
   try {
-    const health = await kubelet.healthz.getHealthz(baseUrl);
+    const health = await kubelet.healthz.getHealthz();
     console.log('Health:', health);
   } catch (error) {
     console.error('Error getting health:', error);

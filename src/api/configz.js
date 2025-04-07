@@ -3,12 +3,26 @@
  * @module api/configz
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get Kubelet's configurations
- * @returns {Promise<Object>} Kubelet configurations
+ * API for getting Kubelet's configurations
+ * @module api/configz
+ * @extends BaseApi
  */
-export const getConfigz = async () => {
-  return get('configz');
-}; 
+export class ConfigzApi extends BaseApi {
+  /**
+   * @param {string} baseUrl - The base URL for the Kubelet API
+   */
+  constructor(baseUrl) {
+    super(baseUrl, '/configz');
+  }
+
+  /**
+   * Get Kubelet's configurations
+   * @returns {Promise<Object>} The Kubelet's configurations
+   */
+  async getConfigz() {
+    return this.get();
+  }
+} 

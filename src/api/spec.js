@@ -3,12 +3,26 @@
  * @module api/spec
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get cached MachineInfo returned by cadvisor
- * @returns {Promise<Object>} MachineInfo data
+ * API for getting cached MachineInfo returned by cadvisor
+ * @module api/spec
+ * @extends BaseApi
  */
-export const getSpec = async () => {
-  return get('spec');
-}; 
+export class SpecApi extends BaseApi {
+  constructor() {
+    super('/spec');
+  }
+
+  /**
+   * Get cached MachineInfo returned by cadvisor
+   * @returns {Promise<Object>} Machine information
+   */
+  async getSpec() {
+    return this.get();
+  }
+}
+
+// Create and export a singleton instance
+export const spec = new SpecApi(); 

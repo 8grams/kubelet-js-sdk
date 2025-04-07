@@ -3,47 +3,59 @@
  * @module api/exec
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Run command inside a container with stream options
- * @param {string} podNamespace - Pod namespace
- * @param {string} podID - Pod ID
- * @param {string} containerName - Container name
- * @param {string} command - Command to run
- * @param {boolean} [input=true] - Enable input stream
- * @param {boolean} [output=true] - Enable output stream
- * @param {boolean} [tty=true] - Enable TTY
- * @returns {Promise<Object>} Command execution result
+ * API for executing commands in containers
+ * @module api/exec
+ * @extends BaseApi
  */
-export const execCommand = async (podNamespace, podID, containerName, command, input = true, output = true, tty = true) => {
-  const params = new URLSearchParams({
-    command,
-    input: input ? '1' : '0',
-    output: output ? '1' : '0',
-    tty: tty ? '1' : '0'
-  });
-  return get(`exec/${podNamespace}/${podID}/${containerName}?${params.toString()}`);
-};
+export class ExecApi extends BaseApi {
+  constructor() {
+    super('/exec');
+  }
 
-/**
- * Run command inside a container with stream options and UID
- * @param {string} podNamespace - Pod namespace
- * @param {string} podID - Pod ID
- * @param {string} uid - Pod UID
- * @param {string} containerName - Container name
- * @param {string} command - Command to run
- * @param {boolean} [input=true] - Enable input stream
- * @param {boolean} [output=true] - Enable output stream
- * @param {boolean} [tty=true] - Enable TTY
- * @returns {Promise<Object>} Command execution result
- */
-export const execCommandWithUid = async (podNamespace, podID, uid, containerName, command, input = true, output = true, tty = true) => {
-  const params = new URLSearchParams({
-    command,
-    input: input ? '1' : '0',
-    output: output ? '1' : '0',
-    tty: tty ? '1' : '0'
-  });
-  return get(`exec/${podNamespace}/${podID}/${uid}/${containerName}?${params.toString()}`);
-}; 
+  /**
+   * Run command inside a container with stream options
+   * @param {string} podNamespace - The namespace of the pod
+   * @param {string} podID - The ID of the pod
+   * @param {string} containerName - The name of the container
+   * @param {string} command - The command to run
+   * @param {boolean} [input=true] - Whether to enable input stream
+   * @param {boolean} [output=true] - Whether to enable output stream
+   * @param {boolean} [tty=true] - Whether to enable TTY
+   * @returns {Promise<Object>} Command execution result
+   */
+  async execCommand(podNamespace, podID, containerName, command, input = true, output = true, tty = true) {
+    const params = new URLSearchParams();
+    params.append('command', command);
+    params.append('input', input.toString());
+    params.append('output', output.toString());
+    params.append('tty', tty.toString());
+    return this.get(`/${podNamespace}/${podID}/${containerName}?${params.toString()}`);
+  }
+
+  /**
+   * Run command inside a container with stream options and UID
+   * @param {string} podNamespace - The namespace of the pod
+   * @param {string} podID - The ID of the pod
+   * @param {string} uid - The UID to run the command as
+   * @param {string} containerName - The name of the container
+   * @param {string} command - The command to run
+   * @param {boolean} [input=true] - Whether to enable input stream
+   * @param {boolean} [output=true] - Whether to enable output stream
+   * @param {boolean} [tty=true] - Whether to enable TTY
+   * @returns {Promise<Object>} Command execution result
+   */
+  async execCommandWithUid(podNamespace, podID, uid, containerName, command, input = true, output = true, tty = true) {
+    const params = new URLSearchParams();
+    params.append('command', command);
+    params.append('input', input.toString());
+    params.append('output', output.toString());
+    params.append('tty', tty.toString());
+    return this.get(`/${podNamespace}/${podID}/${uid}/${containerName}?${params.toString()}`);
+  }
+}
+
+// Create and export a singleton instance
+export const exec = new ExecApi(); 

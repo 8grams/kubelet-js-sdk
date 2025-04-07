@@ -3,36 +3,50 @@
  * @module api/metrics
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get metrics
- * @returns {Promise<Object>} Metrics data
+ * API for getting metrics information
+ * @module api/metrics
+ * @extends BaseApi
  */
-export const getMetrics = async () => {
-  return get('metrics');
-};
+export class MetricsApi extends BaseApi {
+  constructor() {
+    super('/metrics');
+  }
 
-/**
- * Get metrics cadvisor
- * @returns {Promise<Object>} Cadvisor metrics data
- */
-export const getMetricsCadvisor = async () => {
-  return get('metrics/cadvisor');
-};
+  /**
+   * Get metrics
+   * @returns {Promise<Object>} Metrics data
+   */
+  async getMetrics() {
+    return this.get();
+  }
 
-/**
- * Get metrics resource
- * @returns {Promise<Object>} Resource metrics data
- */
-export const getMetricsResource = async () => {
-  return get('metrics/resource');
-};
+  /**
+   * Get cadvisor metrics
+   * @returns {Promise<Object>} Cadvisor metrics data
+   */
+  async getMetricsCadvisor() {
+    return this.get('/cadvisor');
+  }
 
-/**
- * Get metrics probes
- * @returns {Promise<Object>} Probes metrics data
- */
-export const getMetricsProbes = async () => {
-  return get('metrics/probes');
-}; 
+  /**
+   * Get resource metrics
+   * @returns {Promise<Object>} Resource metrics data
+   */
+  async getMetricsResource() {
+    return this.get('/resource');
+  }
+
+  /**
+   * Get probes metrics
+   * @returns {Promise<Object>} Probes metrics data
+   */
+  async getMetricsProbes() {
+    return this.get('/probes');
+  }
+}
+
+// Create and export a singleton instance
+export const metrics = new MetricsApi(); 

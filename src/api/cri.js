@@ -3,40 +3,54 @@
  * @module api/cri
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get CRI info
- * @returns {Promise<Object>} CRI info
+ * API for Container Runtime Interface (CRI)
+ * @module api/cri
+ * @extends BaseApi
  */
-export const getCriInfo = async () => {
-  return get('cri/info');
-};
+export class CriApi extends BaseApi {
+  /**
+   * @param {string} baseUrl - The base URL for the Kubelet API
+   */
+  constructor(baseUrl) {
+    super(baseUrl, '/cri');
+  }
 
-/**
- * Get CRI version
- * @returns {Promise<Object>} CRI version
- */
-export const getCriVersion = async () => {
-  return get('cri/version');
-};
+  /**
+   * Get CRI info
+   * @returns {Promise<Object>} CRI info
+   */
+  async getCriInfo() {
+    return this.get();
+  }
 
-/**
- * Get CRI status
- * @returns {Promise<Object>} CRI status
- */
-export const getCriStatus = async () => {
-  return get('cri/status');
-};
+  /**
+   * Get CRI version
+   * @returns {Promise<Object>} CRI version
+   */
+  async getCriVersion() {
+    return this.get('/version');
+  }
 
-/**
- * Run commands inside a container through the Container Runtime Interface (CRI)
- * @param {string} baseUrl - Base URL of the Kubelet API
- * @param {string} valueFrom302 - Value from 302 redirect
- * @param {string} command - Command to run
- * @returns {Promise<Object>} Command execution result
- */
-export const execCriCommand = async (baseUrl, valueFrom302, command) => {
-  const params = new URLSearchParams({ cmd: command });
-  return get(`${baseUrl}/cri/exec/${valueFrom302}?${params.toString()}`);
-}; 
+  /**
+   * Get CRI status
+   * @returns {Promise<Object>} CRI status
+   */
+  async getCriStatus() {
+    return this.get('/status');
+  }
+
+  /**
+   * Execute a CRI command
+   * @param {string} valueFrom302 - Value from 302 redirect
+   * @param {string} command - Command to execute
+   * @returns {Promise<Object>} The CRI command response
+   */
+  async execCriCommand(valueFrom302, command) {
+    const params = new URLSearchParams();
+    params.append('command', command);
+    return this.get(`/exec/${valueFrom302}?${params.toString()}`);
+  }
+} 

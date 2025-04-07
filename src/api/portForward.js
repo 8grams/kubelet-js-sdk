@@ -3,28 +3,41 @@
  * @module api/portForward
  */
 
-import { post } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Forward a port to a pod
- * @param {string} podNamespace - The namespace of the pod
- * @param {string} podID - The ID of the pod
- * @param {number} port - The port to forward
- * @returns {Promise<Object>} Port forward result
+ * API for port forwarding
+ * @module api/portForward
+ * @extends BaseApi
  */
-export const portForward = async (podNamespace, podID, port) => {
-  return post(`portForward/${podNamespace}/${podID}/${port}`);
-};
+export class PortForwardApi extends BaseApi {
+  /**
+   * @param {string} baseUrl - The base URL for the Kubelet API
+   */
+  constructor(baseUrl) {
+    super(baseUrl, '/portForward');
+  }
 
-/**
- * Port forwarding inside the container with UID
- * @param {string} baseUrl - Base URL of the Kubelet API
- * @param {string} podNamespace - Pod namespace
- * @param {string} podID - Pod ID
- * @param {string} uid - Pod UID
- * @param {string} containerName - Container name
- * @returns {Promise<Object>} Port forwarding result
- */
-export const portForwardWithUid = async (baseUrl, podNamespace, podID, uid, containerName) => {
-  return get(`${baseUrl}/portForward/${podNamespace}/${podID}/${uid}/${containerName}`);
-}; 
+  /**
+   * Forward ports to a container
+   * @param {string} podNamespace - Namespace of the pod
+   * @param {string} podID - ID of the pod
+   * @param {string} containerName - Name of the container
+   * @returns {Promise<Object>} The port forward response
+   */
+  async portForward(podNamespace, podID, containerName) {
+    return this.get(`/${podNamespace}/${podID}/${containerName}`);
+  }
+
+  /**
+   * Forward ports to a container with UID
+   * @param {string} podNamespace - Namespace of the pod
+   * @param {string} podID - ID of the pod
+   * @param {string} uid - UID of the container
+   * @param {string} containerName - Name of the container
+   * @returns {Promise<Object>} The port forward response
+   */
+  async portForwardWithUid(podNamespace, podID, uid, containerName) {
+    return this.get(`/${podNamespace}/${podID}/${uid}/${containerName}`);
+  }
+} 

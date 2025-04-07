@@ -3,12 +3,26 @@
  * @module api/pods
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get list of pods
- * @returns {Promise<Object>} List of pods
+ * API for getting pods information
+ * @module api/pods
+ * @extends BaseApi
  */
-export const getPods = async () => {
-  return get('pods');
-}; 
+export class PodsApi extends BaseApi {
+  constructor() {
+    super('/pods');
+  }
+
+  /**
+   * Get list of pods
+   * @returns {Promise<Object>} List of pods
+   */
+  async getPods() {
+    return this.get();
+  }
+}
+
+// Create and export a singleton instance
+export const pods = new PodsApi(); 

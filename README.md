@@ -11,82 +11,211 @@ npm install kubelet-js-sdk
 ## Usage
 
 ```javascript
-import { setBaseUrl } from 'kubelet-js-sdk';
-import { getPods, getMetrics } from 'kubelet-js-sdk';
+import { Kubelet } from 'kubelet-js-sdk';
 
-// Set the base URL for the Kubelet API
-setBaseUrl('http://localhost:10250');
+// Create a new Kubelet instance
+const kubelet = new Kubelet({
+  baseUrl: 'http://localhost:10250'
+});
 
 // Get list of pods
-const pods = await getPods();
+const pods = await kubelet.pods.getPods();
 
 // Get metrics
-const metrics = await getMetrics();
+const metrics = await kubelet.metrics.getMetrics();
+const cadvisorMetrics = await kubelet.metrics.getMetricsCadvisor();
+
+// Run a command in a container
+const result = await kubelet.run.runCommand(
+  'default',
+  'my-pod',
+  'my-container',
+  'ls -la'
+);
+
+// Execute a command with stream options
+const execResult = await kubelet.exec.execCommand(
+  'default',
+  'my-pod',
+  'my-container',
+  'bash',
+  true,  // input
+  true,  // output
+  true   // tty
+);
 ```
 
 ## API Reference
 
 ### Pods
-- `getPods()` - Get list of pods
+```javascript
+// Get list of pods
+const pods = await kubelet.pods.getPods();
+```
 
 ### Metrics
-- `getMetrics()` - Get metrics
-- `getMetricsCadvisor()` - Get cadvisor metrics
-- `getMetricsResource()` - Get resource metrics
-- `getMetricsProbes()` - Get probes metrics
+```javascript
+// Get metrics
+const metrics = await kubelet.metrics.getMetrics();
+
+// Get cadvisor metrics
+const cadvisorMetrics = await kubelet.metrics.getMetricsCadvisor();
+
+// Get resource metrics
+const resourceMetrics = await kubelet.metrics.getMetricsResource();
+
+// Get probes metrics
+const probesMetrics = await kubelet.metrics.getMetricsProbes();
+```
 
 ### Logs
-- `getLogs(path)` - Get logs from the specified path
-- `getLogsBySubpath(subpath)` - Get logs from the specified subpath
+```javascript
+// Get logs from path
+const logs = await kubelet.logs.getLogs('path/to/logs');
+
+// Get logs from subpath
+const subpathLogs = await kubelet.logs.getLogsBySubpath('subpath');
+```
 
 ### Container Logs
-- `getContainerLogs(podNamespace, podID, containerName)` - Get container logs
+```javascript
+// Get container logs
+const containerLogs = await kubelet.containerLogs.getContainerLogs(
+  'default',
+  'my-pod',
+  'my-container'
+);
+```
 
 ### Healthz
-- `getHealthz()` - Get health status
-- `getHealthzLog()` - Get health check logs
-- `getHealthzPing()` - Ping health check
-- `getHealthzSyncloop()` - Get sync loop status
+```javascript
+// Get health status
+const health = await kubelet.healthz.getHealthz();
+
+// Get health check logs
+const healthLogs = await kubelet.healthz.getHealthzLog();
+
+// Ping health check
+const ping = await kubelet.healthz.getHealthzPing();
+
+// Get sync loop status
+const syncLoop = await kubelet.healthz.getHealthzSyncloop();
+```
 
 ### Debug
-- `getPprofProfile(profile)` - Get pprof profile
-- `getDebugFlags()` - Get debug flags
-- `setDebugFlags(value)` - Set debug flags
+```javascript
+// Get pprof profile
+const profile = await kubelet.debug.getPprofProfile('heap');
+
+// Get debug flags
+const flags = await kubelet.debug.getDebugFlags();
+
+// Set debug flags
+await kubelet.debug.setDebugFlags('v=4');
+```
 
 ### Stats
-- `getStats()` - Get node, pods and containers performance stats
-- `getStatsSummary(onlyCpuAndMemory)` - Get summary of stats
-- `getContainerStats()` - Get container stats
-- `getContainerStatsByDetails(namespace, podName, uid, containerName)` - Get specific container stats
-- `getContainerStatsByName(podName, containerName)` - Get specific container stats
+```javascript
+// Get node and pod stats
+const stats = await kubelet.stats.getStats();
 
-### Spec
-- `getSpec()` - Get cached MachineInfo returned by cadvisor
+// Get summary stats
+const summary = await kubelet.stats.getStatsSummary(true); // only CPU and memory
 
-### Configz
-- `getConfigz()` - Get Kubelet's configurations
+// Get container stats
+const containerStats = await kubelet.stats.getContainerStats();
+
+// Get specific container stats
+const podStats = await kubelet.stats.getContainerStatsByDetails(
+  'default',
+  'my-pod',
+  'pod-uid',
+  'my-container'
+);
+```
 
 ### Run
-- `runCommand(podNamespace, podID, containerName, command)` - Run command inside a container
-- `runCommandWithUid(podNamespace, podID, uid, containerName, command)` - Run command inside a container with UID
+```javascript
+// Run command in container
+const result = await kubelet.run.runCommand(
+  'default',
+  'my-pod',
+  'my-container',
+  'ls -la'
+);
+
+// Run command with UID
+const resultWithUid = await kubelet.run.runCommandWithUid(
+  'default',
+  'my-pod',
+  '1000',
+  'my-container',
+  'whoami'
+);
+```
 
 ### Exec
-- `execCommand(podNamespace, podID, containerName, command, input, output, tty)` - Run command inside a container with stream options
-- `execCommandWithUid(podNamespace, podID, uid, containerName, command, input, output, tty)` - Run command inside a container with stream options and UID
+```javascript
+// Execute command with stream options
+const execResult = await kubelet.exec.execCommand(
+  'default',
+  'my-pod',
+  'my-container',
+  'bash',
+  true,  // input
+  true,  // output
+  true   // tty
+);
 
-### CRI
-- `getCriInfo()` - Get CRI info
-- `getCriVersion()` - Get CRI version
-- `getCriStatus()` - Get CRI status
+// Execute command with UID
+const execResultWithUid = await kubelet.exec.execCommandWithUid(
+  'default',
+  'my-pod',
+  '1000',
+  'my-container',
+  'bash',
+  true,
+  true,
+  true
+);
+```
 
 ### Attach
-- `attach(podNamespace, podID, containerName)` - Attach to a container
+```javascript
+// Attach to container
+const attachResult = await kubelet.attach.attach(
+  'default',
+  'my-pod',
+  'my-container',
+  true,  // input
+  true,  // output
+  true   // tty
+);
+```
 
 ### Port Forward
-- `portForward(podNamespace, podID, port)` - Forward a port to a pod
+```javascript
+// Forward port to pod
+const forwardResult = await kubelet.portForward.portForward(
+  'default',
+  'my-pod',
+  8080,
+  true,  // input
+  true   // output
+);
+```
 
-### Running Pods
-- `getRunningPods()` - Get running pods
+### CRI
+```javascript
+// Get CRI info
+const criInfo = await kubelet.cri.getCriInfo();
+
+// Get CRI version
+const criVersion = await kubelet.cri.getCriVersion();
+
+// Get CRI status
+const criStatus = await kubelet.cri.getCriStatus();
+```
 
 ## License
 

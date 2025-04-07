@@ -3,36 +3,50 @@
  * @module api/healthz
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get health status
- * @returns {Promise<string>} The health status as text
+ * API for health check endpoints
+ * @module api/healthz
+ * @extends BaseApi
  */
-export const getHealthz = async () => {
-  return get('healthz', {}, true);
-};
+export class HealthzApi extends BaseApi {
+  constructor() {
+    super('/healthz');
+  }
 
-/**
- * Get health check logs
- * @returns {Promise<string>} The health check logs as text
- */
-export const getHealthzLog = async () => {
-  return get('healthz/log', {}, true);
-};
+  /**
+   * Get health status
+   * @returns {Promise<string>} Health status
+   */
+  async getHealthz() {
+    return this.get();
+  }
 
-/**
- * Ping health check
- * @returns {Promise<string>} The ping response as text
- */
-export const getHealthzPing = async () => {
-  return get('healthz/ping', {}, true);
-};
+  /**
+   * Get health check logs
+   * @returns {Promise<string>} Health check logs
+   */
+  async getHealthzLog() {
+    return this.get('/log');
+  }
 
-/**
- * Get sync loop status
- * @returns {Promise<string>} The sync loop status as text
- */
-export const getHealthzSyncloop = async () => {
-  return get('healthz/syncloop', {}, true);
-}; 
+  /**
+   * Ping health check
+   * @returns {Promise<string>} Ping response
+   */
+  async getHealthzPing() {
+    return this.get('/ping');
+  }
+
+  /**
+   * Get sync loop status
+   * @returns {Promise<string>} Sync loop status
+   */
+  async getHealthzSyncloop() {
+    return this.get('/syncloop');
+  }
+}
+
+// Create and export a singleton instance
+export const healthz = new HealthzApi(); 

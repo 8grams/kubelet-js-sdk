@@ -3,35 +3,47 @@
  * @module api/run
  */
 
-import { postFormData } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Run command inside a container
- * @param {string} podNamespace - Pod namespace
- * @param {string} podID - Pod ID
- * @param {string} containerName - Container name
- * @param {string} command - Command to run
- * @returns {Promise<Object>} Command execution result
+ * API for running commands in containers
+ * @module api/run
+ * @extends BaseApi
  */
-export const runCommand = async (podNamespace, podID, containerName, command) => {
-  return postFormData(
-    `run/${podNamespace}/${podID}/${containerName}`,
-    `cmd=${encodeURIComponent(command)}`
-  );
-};
+export class RunApi extends BaseApi {
+  constructor() {
+    super('/run');
+  }
 
-/**
- * Run command inside a container with UID
- * @param {string} podNamespace - Pod namespace
- * @param {string} podID - Pod ID
- * @param {string} uid - Pod UID
- * @param {string} containerName - Container name
- * @param {string} command - Command to run
- * @returns {Promise<Object>} Command execution result
- */
-export const runCommandWithUid = async (podNamespace, podID, uid, containerName, command) => {
-  return postFormData(
-    `run/${podNamespace}/${podID}/${uid}/${containerName}`,
-    `cmd=${encodeURIComponent(command)}`
-  );
-}; 
+  /**
+   * Run command inside a container
+   * @param {string} podNamespace - The namespace of the pod
+   * @param {string} podID - The ID of the pod
+   * @param {string} containerName - The name of the container
+   * @param {string} command - The command to run
+   * @returns {Promise<Object>} Command execution result
+   */
+  async runCommand(podNamespace, podID, containerName, command) {
+    const formData = new FormData();
+    formData.append('cmd', command);
+    return this.postFormData(`/${podNamespace}/${podID}/${containerName}`, formData);
+  }
+
+  /**
+   * Run command inside a container with UID
+   * @param {string} podNamespace - The namespace of the pod
+   * @param {string} podID - The ID of the pod
+   * @param {string} uid - The UID to run the command as
+   * @param {string} containerName - The name of the container
+   * @param {string} command - The command to run
+   * @returns {Promise<Object>} Command execution result
+   */
+  async runCommandWithUid(podNamespace, podID, uid, containerName, command) {
+    const formData = new FormData();
+    formData.append('cmd', command);
+    return this.postFormData(`/${podNamespace}/${podID}/${uid}/${containerName}`, formData);
+  }
+}
+
+// Create and export a singleton instance
+export const run = new RunApi(); 

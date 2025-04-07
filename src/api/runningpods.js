@@ -3,12 +3,26 @@
  * @module api/runningpods
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get running pods
- * @returns {Promise<Object>} Running pods data
+ * API for getting running pods information
+ * @module api/runningpods
+ * @extends BaseApi
  */
-export const getRunningPods = async () => {
-  return get('runningpods');
-}; 
+export class RunningPodsApi extends BaseApi {
+  constructor() {
+    super('/runningpods');
+  }
+
+  /**
+   * Get running pods
+   * @returns {Promise<Object>} List of running pods
+   */
+  async getRunningPods() {
+    return this.get();
+  }
+}
+
+// Create and export a singleton instance
+export const runningpods = new RunningPodsApi(); 

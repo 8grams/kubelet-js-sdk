@@ -3,55 +3,69 @@
  * @module api/stats
  */
 
-import { get } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get node, pods and containers performance stats
- * @returns {Promise<Object>} Stats data
+ * API for getting stats information
+ * @module api/stats
+ * @extends BaseApi
  */
-export const getStats = async () => {
-  return get('stats');
-};
-
-/**
- * Get summary of stats
- * @param {boolean} [onlyCpuAndMemory=false] - Whether to only return CPU and memory stats
- * @returns {Promise<Object>} Summary stats data
- */
-export const getStatsSummary = async (onlyCpuAndMemory = false) => {
-  const params = new URLSearchParams();
-  if (onlyCpuAndMemory) {
-    params.append('only_cpu_and_memory', 'true');
+export class StatsApi extends BaseApi {
+  constructor() {
+    super('/stats');
   }
-  return get(`stats/summary?${params.toString()}`);
-};
 
-/**
- * Get container stats
- * @returns {Promise<Object>} Container stats data
- */
-export const getContainerStats = async () => {
-  return get('stats/container');
-};
+  /**
+   * Get node, pods and containers performance stats
+   * @returns {Promise<Object>} Stats data
+   */
+  async getStats() {
+    return this.get();
+  }
 
-/**
- * Get specific container stats by namespace, pod name, uid and container name
- * @param {string} namespace - Pod namespace
- * @param {string} podName - Pod name
- * @param {string} uid - Pod UID
- * @param {string} containerName - Container name
- * @returns {Promise<Object>} Container stats data
- */
-export const getContainerStatsByDetails = async (namespace, podName, uid, containerName) => {
-  return get(`stats/${namespace}/${podName}/${uid}/${containerName}`);
-};
+  /**
+   * Get summary of stats
+   * @param {boolean} [onlyCpuAndMemory=false] - Whether to only get CPU and memory stats
+   * @returns {Promise<Object>} Summary stats
+   */
+  async getStatsSummary(onlyCpuAndMemory = false) {
+    const params = new URLSearchParams();
+    if (onlyCpuAndMemory) {
+      params.append('only_cpu_and_memory', 'true');
+    }
+    return this.get(`/summary?${params.toString()}`);
+  }
 
-/**
- * Get specific container stats by pod name and container name
- * @param {string} podName - Pod name
- * @param {string} containerName - Container name
- * @returns {Promise<Object>} Container stats data
- */
-export const getContainerStatsByName = async (podName, containerName) => {
-  return get(`stats/${podName}/${containerName}`);
-}; 
+  /**
+   * Get container stats
+   * @returns {Promise<Object>} Container stats
+   */
+  async getContainerStats() {
+    return this.get('/container');
+  }
+
+  /**
+   * Get specific container stats by details
+   * @param {string} namespace - The namespace of the pod
+   * @param {string} podName - The name of the pod
+   * @param {string} uid - The UID of the pod
+   * @param {string} containerName - The name of the container
+   * @returns {Promise<Object>} Container stats
+   */
+  async getContainerStatsByDetails(namespace, podName, uid, containerName) {
+    return this.get(`/${namespace}/${podName}/${uid}/${containerName}`);
+  }
+
+  /**
+   * Get specific container stats by name
+   * @param {string} podName - The name of the pod
+   * @param {string} containerName - The name of the container
+   * @returns {Promise<Object>} Container stats
+   */
+  async getContainerStatsByName(podName, containerName) {
+    return this.get(`/${podName}/${containerName}`);
+  }
+}
+
+// Create and export a singleton instance
+export const stats = new StatsApi(); 

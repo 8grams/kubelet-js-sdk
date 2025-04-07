@@ -3,30 +3,44 @@
  * @module api/debug
  */
 
-import { get, put } from '../utils/fetch.js';
+import { BaseApi } from './BaseApi.js';
 
 /**
- * Get pprof profile
- * @param {string} profile - Profile name
- * @returns {Promise<Object>} Profile data
+ * API for debug endpoints
+ * @module api/debug
+ * @extends BaseApi
  */
-export const getPprofProfile = async (profile) => {
-  return get(`debug/pprof/${profile}`);
-};
+export class DebugApi extends BaseApi {
+  constructor() {
+    super('/debug');
+  }
 
-/**
- * Get debug flags
- * @returns {Promise<Object>} Debug flags
- */
-export const getDebugFlags = async () => {
-  return get('debug/flags/v');
-};
+  /**
+   * Get pprof profile
+   * @param {string} profile - The profile to get
+   * @returns {Promise<Object>} Profile data
+   */
+  async getPprofProfile(profile) {
+    return this.get(`/pprof/${profile}`);
+  }
 
-/**
- * Set debug flags
- * @param {number} value - Debug level value
- * @returns {Promise<Object>} Debug flags update result
- */
-export const setDebugFlags = async (value) => {
-  return put('debug/flags/v', value);
-}; 
+  /**
+   * Get debug flags
+   * @returns {Promise<Object>} Debug flags
+   */
+  async getDebugFlags() {
+    return this.get('/flags');
+  }
+
+  /**
+   * Set debug flags
+   * @param {string} value - The value to set
+   * @returns {Promise<Object>} Response
+   */
+  async setDebugFlags(value) {
+    return this.post('/flags', { value });
+  }
+}
+
+// Create and export a singleton instance
+export const debug = new DebugApi(); 
