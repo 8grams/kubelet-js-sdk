@@ -1,58 +1,38 @@
 import { Kubelet } from '../index.js';
 
-const baseUrl = 'http://localhost:10250'; // Replace with your Kubelet API URL
-const kubelet = new Kubelet({ baseUrl });
+describe('Kubelet SDK', () => {
+  const baseUrl = 'http://localhost:10250'; // Replace with your Kubelet API URL
+  const kubelet = new Kubelet({ baseUrl });
 
-// Test stats
-async function testStats() {
-  try {
-    const stats = await kubelet.stats.getStats();
-    console.log('Stats:', stats);
-  } catch (error) {
-    console.error('Error getting stats:', error);
-  }
-}
+  describe('Stats API', () => {
+    it('should get stats', async () => {
+      const stats = await kubelet.stats.getStats();
+      expect(stats).toBeDefined();
+      expect(typeof stats).toBe('object');
+    });
+  });
 
-// Test metrics
-async function testMetrics() {
-  try {
-    const metrics = await kubelet.metrics.getMetrics();
-    console.log('Metrics:', metrics);
-  } catch (error) {
-    console.error('Error getting metrics:', error);
-  }
-}
+  describe('Metrics API', () => {
+    it('should get metrics', async () => {
+      const metrics = await kubelet.metrics.getMetrics();
+      expect(metrics).toBeDefined();
+      expect(typeof metrics).toBe('object');
+    });
+  });
 
-// Test pods
-async function testPods() {
-  try {
-    const pods = await kubelet.pods.getPods();
-    console.log('Pods:', pods);
-  } catch (error) {
-    console.error('Error getting pods:', error);
-  }
-}
+  describe('Pods API', () => {
+    it('should get pods', async () => {
+      const pods = await kubelet.pods.getPods();
+      expect(pods).toBeDefined();
+      expect(Array.isArray(pods)).toBe(true);
+    });
+  });
 
-// Test healthz
-async function testHealthz() {
-  try {
-    const health = await kubelet.healthz.getHealthz();
-    console.log('Health:', health);
-  } catch (error) {
-    console.error('Error getting health:', error);
-  }
-}
-
-// Run tests
-async function runTests() {
-  console.log('Testing Kubelet SDK...');
-  
-  await testStats();
-  await testMetrics();
-  await testPods();
-  await testHealthz();
-  
-  console.log('Tests completed');
-}
-
-runTests().catch(console.error); 
+  describe('Healthz API', () => {
+    it('should get health status', async () => {
+      const health = await kubelet.healthz.getHealthz();
+      expect(health).toBeDefined();
+      expect(typeof health).toBe('object');
+    });
+  });
+}); 
